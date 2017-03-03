@@ -1,0 +1,34 @@
+#!/bin/sh
+
+[ -z "$1" ] && {
+    echo Usage: `basename $0` file.crx [der-public-key] 1>&2
+    exit 1
+}
+
+out=`basename "$1" .crx`
+
+rm -rf "$out"
+mkdir -p "$out"
+
+key="$out/key.der"
+sig="$out/ext.sig"
+zip="$out/ext.zip"
+
+key2verify=$key
+[ -z "$2" ] || key2verify=$2
+
+# the data comes in little-endian
+key_len=$((0x$(xxd -s 0x8 -l 4 -c 4 -e "$1" | awk '{print $2}')))
+sig_len=$((0x$(xxd -s 0xc -l 4 -c 4 -e "$1" | awk '{print $2}')))
+total_len=$((16+$key_len+$sig_len))
+
+printf 'RSA key\t\t\t%d bits\n' $((sig_len*8))
+printf 'Total header size:\t%d bytes\n' $total_len
+
+dd status=none if="$1" iflag=skip_bytes,count_bytes skip=16 count=$key_len > "$key"
+dd status=none if="$1" iflag=skip_bytes,count_bytes skip=$((16+$key_len)) count=$sig_len > "$sig"
+dd status=none if="$1" iflag=skip_bytes skip=$total_len > "$zip"
+
+printf 'Public key:\t\t%s\n' "$key2verify"
+printf 'Signature status:\t'
+openssl dgst -sha1 -keyform DER -verify "$key2verify" -signature "$sig" "$zip"
