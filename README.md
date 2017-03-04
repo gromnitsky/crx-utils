@@ -1,5 +1,7 @@
 # crx-utils
 
+http://gromnitsky.blogspot.com/2017/03/bloatware-comes-when-nobodys-lookin.html
+
 ## zip2crx
 
 ~~~
@@ -12,7 +14,7 @@ $ ./zip2crx foo.zip private.pem
 Extracts a public key, a signature & a .zip archive.
 
 ~~~
-$ ./crx2zip foo.crx alice.pub
+$ ./crx2zip foo.crx
   RSA key                 1024 bits
   Total header size:      306 bytes
   Public key:             foo/key.der
