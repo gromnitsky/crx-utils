@@ -5,6 +5,11 @@
     exit 1
 }
 
+[ "$(file -b --mime-type "$1")" != application/x-chrome-extension ] && {
+    echo Invalid input 1>&2
+    exit 1
+}
+
 out=`basename "$1" .crx`
 
 rm -rf "$out"
