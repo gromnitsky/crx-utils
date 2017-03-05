@@ -27,7 +27,7 @@ key_len=$((0x$(xxd -s 0x8 -l 4 -c 4 -e "$1" | awk '{print $2}')))
 sig_len=$((0x$(xxd -s 0xc -l 4 -c 4 -e "$1" | awk '{print $2}')))
 total_len=$((16+$key_len+$sig_len))
 
-printf 'RSA key\t\t\t%d bits\n' $((sig_len*8))
+printf 'RSA key:\t\t%d-bit\n' $((sig_len*8))
 printf 'Total header size:\t%d bytes\n' $total_len
 
 dd status=none if="$1" iflag=skip_bytes,count_bytes skip=16 count=$key_len > "$key"
